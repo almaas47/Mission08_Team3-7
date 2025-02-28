@@ -6,10 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<TimeMangementContext>(options =>
+builder.Services.AddDbContext<TimeManagementContext>(options =>
 {
     options.UseSqlite(builder.Configuration["ConnectionStrings:DatingConnection"]);
 });
+
 
 var app = builder.Build();
 
