@@ -1,0 +1,103 @@
+@model IEnumerable<Mission08_Team3_7.Models.Task>
+@using System.Linq
+
+@{
+    ViewData["Title"] = "Covey's Time Management Matrix";
+}
+
+<div class="container">
+    <div class="row">
+        <!-- Quadrant I: Important/Urgent -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5>Quadrant I: Important / Urgent</h5>
+                </div>
+                <div class="card-body">
+                    @{
+                        var q1Tasks = Model.Where(t => t.Quadrant == 1 && !t.Completed).ToList();
+                    }
+                    @foreach (var task in q1Tasks)
+                    {
+                        <div class="task-item mb-2 p-2 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>@task.TaskName</strong>
+                                    @if (!string.IsNullOrEmpty(task.DueDate))
+                                    {
+                                        <span class="text-muted ml-2">(Due: @task.DueDate)</span>
+                                    }
+                                    <br>
+                                    <span class="badge badge-primary">@task.Category?.CategoryName</span>
+                                </div>
+                                <div>
+                                    <a asp-action="Edit" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-primary">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-danger">Delete</a>
+                                    <form asp-action="MarkCompleted" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@task.TaskId" />
+                                        <button type="submit" class="btn btn-sm btn-success">✓</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (!q1Tasks.Any())
+                    {
+                        <p class="text-muted">No tasks in this quadrant</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Quadrant II: Important/Not Urgent -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h5>Quadrant II: Important / Not Urgent</h5>
+                </div>
+                <div class="card-body">
+                    @{
+                        var q2Tasks = Model.Where(t => t.Quadrant == 2 && !t.Completed).ToList();
+                    }
+                    <!-- Repeat the same foreach structure as Quadrant I -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Quadrant III: Not Important/Urgent -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-white">
+                    <h5>Quadrant III: Not Important / Urgent</h5>
+                </div>
+                <div class="card-body">
+                    @{
+                        var q3Tasks = Model.Where(t => t.Quadrant == 3 && !t.Completed).ToList();
+                    }
+                    <!-- Repeat the same foreach structure -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Quadrant IV: Not Important/Not Urgent -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h5>Quadrant IV: Not Important / Not Urgent</h5>
+                </div>
+                <div class="card-body">
+                    @{
+                        var q4Tasks = Model.Where(t => t.Quadrant == 4 && !t.Completed).ToList();
+                    }
+                    <!-- Repeat the same foreach structure -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <a asp-action="Create" class="btn btn-primary">Add New Task</a>
+</div>
