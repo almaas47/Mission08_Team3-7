@@ -8,176 +8,221 @@
     var tasks = Model ?? Enumerable.Empty<Mission08_Team3_7.Models.Task>();
 }
 
-<div class="container">
-    <div class="row">
-        <!-- Quadrant I: Important/Urgent -->
-        <div class="col-md-6 mb-4">
-            <div class="card border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h5>Quadrant I: Important / Urgent</h5>
-                </div>
-                <div class="card-body">
-                    @{
-                        var q1Tasks = tasks.Where(t => t.Quadrant == 1).ToList();
-                    }
-                    @foreach (var task in q1Tasks)
-                    {
-                        <div class="task-item mb-2 p-2 border-bottom">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>@task.TaskName</strong>
-                                    @if (!string.IsNullOrEmpty(task.DueDate))
-                                    {
-                                        <span class="text-muted ml-2">(Due: @task.DueDate)</span>
-                                    }
-                                    <br>
-                                    <span class="badge badge-primary">@task.Category?.CategoryName</span>
-                                </div>
-                                <div>
-                                    <a asp-action="Edit" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-primary">Edit</a>
-                                    <a asp-action="Delete" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-danger">Delete</a>
-                                    <form asp-action="MarkCompleted" method="post" class="d-inline">
-                                        <input type="hidden" name="id" value="@task.TaskId" />
-                                        <button type="submit" class="btn btn-sm btn-success">✓</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                    @if (!q1Tasks.Any())
-                    {
-                        <p class="text-muted">No tasks in this quadrant</p>
-                    }
-                </div>
-            </div>
-        </div>
+<style>
+    .matrix-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Two columns */
+        grid-template-rows: repeat(2, auto); /* Two rows */
+        gap: 20px; /* Spacing between quadrants */
+        padding: 20px;
+    }
 
-        <!-- Quadrant II: Important/Not Urgent -->
-        <div class="col-md-6 mb-4">
-            <div class="card border-success">
-                <div class="card-header bg-success text-white">
-                    <h5>Quadrant II: Important / Not Urgent</h5>
+    .quadrant {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        background-color: #f9f9f9;
+    }
+
+    .quadrant-header {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: white;
+        padding: 10px;
+        border-radius: 4px;
+    }
+
+    .quadrant-I .quadrant-header { background-color: #dc3545; } /* Red */
+    .quadrant-II .quadrant-header { background-color: #28a745; } /* Green */
+    .quadrant-III .quadrant-header { background-color: #ffc107; } /* Yellow */
+    .quadrant-IV .quadrant-header { background-color: #17a2b8; } /* Blue */
+
+    .task-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .task-item:last-child {
+        border-bottom: none;
+    }
+
+    .task-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .no-tasks {
+        color: #888;
+        font-style: italic;
+    }
+</style>
+
+<div class="matrix-grid">
+    <!-- Quadrant I: Important/Urgent -->
+    <div class="quadrant quadrant-I">
+        <div class="quadrant-header">Quadrant I: Important / Urgent</div>
+        <div class="quadrant-body">
+            @{
+                var q1Tasks = tasks.Where(t => t.Quadrant == 1).ToList();
+            }
+            @foreach (var task in q1Tasks)
+            {
+                <div class="task-item">
+                    <div>
+                        <strong>@task.TaskName</strong>
+                        @if (!string.IsNullOrEmpty(task.DueDate))
+                        {
+                            <span class="text-muted">(Due: @task.DueDate)</span>
+                        }
+                        <br>
+                        <span class="badge badge-primary">@task.Category?.CategoryName</span>
+                    </div>
+                    <div class="task-actions">
+                        <a asp-action="Edit" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <form asp-action="Delete" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@task.TaskId" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                        <form asp-action="ToggleCompleted" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@task.TaskId" />
+                            <button type="submit" class="btn btn-sm btn-success">
+                                @(task.Completed ? "Undo" : "✓")
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                <div class="card-body">
-                    @{
-                        var q2Tasks = tasks.Where(t => t.Quadrant == 2).ToList();
-                    }
-                    @foreach (var task in q2Tasks)
-                    {
-                        <div class="task-item mb-2 p-2 border-bottom">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>@task.TaskName</strong>
-                                    @if (!string.IsNullOrEmpty(task.DueDate))
-                                    {
-                                        <span class="text-muted ml-2">(Due: @task.DueDate)</span>
-                                    }
-                                    <br>
-                                    <span class="badge badge-primary">@task.Category?.CategoryName</span>
-                                </div>
-                                <div>
-                                    <a asp-action="Edit" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-primary">Edit</a>
-                                    <a asp-action="Delete" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-danger">Delete</a>
-                                    <form asp-action="MarkCompleted" method="post" class="d-inline">
-                                        <input type="hidden" name="id" value="@task.TaskId" />
-                                        <button type="submit" class="btn btn-sm btn-success">✓</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                    @if (!q2Tasks.Any())
-                    {
-                        <p class="text-muted">No tasks in this quadrant</p>
-                    }
-                </div>
-            </div>
+            }
+            @if (!q1Tasks.Any())
+            {
+                <p class="no-tasks">No tasks in this quadrant</p>
+            }
         </div>
     </div>
 
-    <div class="row">
-        <!-- Quadrant III: Not Important/Urgent -->
-        <div class="col-md-6 mb-4">
-            <div class="card border-warning">
-                <div class="card-header bg-warning text-white">
-                    <h5>Quadrant III: Not Important / Urgent</h5>
+    <!-- Quadrant II: Important/Not Urgent -->
+    <div class="quadrant quadrant-II">
+        <div class="quadrant-header">Quadrant II: Important / Not Urgent</div>
+        <div class="quadrant-body">
+            @{
+                var q2Tasks = tasks.Where(t => t.Quadrant == 2).ToList();
+            }
+            @foreach (var task in q2Tasks)
+            {
+                <div class="task-item">
+                    <div>
+                        <strong>@task.TaskName</strong>
+                        @if (!string.IsNullOrEmpty(task.DueDate))
+                        {
+                            <span class="text-muted">(Due: @task.DueDate)</span>
+                        }
+                        <br>
+                        <span class="badge badge-primary">@task.Category?.CategoryName</span>
+                    </div>
+                    <div class="task-actions">
+                        <a asp-action="Edit" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <form asp-action="Delete" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@task.TaskId" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                        <form asp-action="ToggleCompleted" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@task.TaskId" />
+                            <button type="submit" class="btn btn-sm btn-success">
+                                @(task.Completed ? "Undo" : "✓")
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                <div class="card-body">
-                    @{
-                        var q3Tasks = tasks.Where(t => t.Quadrant == 3).ToList();
-                    }
-                    @foreach (var task in q3Tasks)
-                    {
-                        <div class="task-item mb-2 p-2 border-bottom">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>@task.TaskName</strong>
-                                    @if (!string.IsNullOrEmpty(task.DueDate))
-                                    {
-                                        <span class="text-muted ml-2">(Due: @task.DueDate)</span>
-                                    }
-                                    <br>
-                                    <span class="badge badge-primary">@task.Category?.CategoryName</span>
-                                </div>
-                                <div>
-                                    <a asp-action="Edit" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-primary">Edit</a>
-                                    <a asp-action="Delete" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-danger">Delete</a>
-                                    <form asp-action="MarkCompleted" method="post" class="d-inline">
-                                        <input type="hidden" name="id" value="@task.TaskId" />
-                                        <button type="submit" class="btn btn-sm btn-success">✓</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                    @if (!q3Tasks.Any())
-                    {
-                        <p class="text-muted">No tasks in this quadrant</p>
-                    }
-                </div>
-            </div>
+            }
+            @if (!q2Tasks.Any())
+            {
+                <p class="no-tasks">No tasks in this quadrant</p>
+            }
         </div>
+    </div>
 
-        <!-- Quadrant IV: Not Important/Not Urgent -->
-        <div class="col-md-6 mb-4">
-            <div class="card border-info">
-                <div class="card-header bg-info text-white">
-                    <h5>Quadrant IV: Not Important / Not Urgent</h5>
+    <!-- Quadrant III: Not Important/Urgent -->
+    <div class="quadrant quadrant-III">
+        <div class="quadrant-header">Quadrant III: Not Important / Urgent</div>
+        <div class="quadrant-body">
+            @{
+                var q3Tasks = tasks.Where(t => t.Quadrant == 3).ToList();
+            }
+            @foreach (var task in q3Tasks)
+            {
+                <div class="task-item">
+                    <div>
+                        <strong>@task.TaskName</strong>
+                        @if (!string.IsNullOrEmpty(task.DueDate))
+                        {
+                            <span class="text-muted">(Due: @task.DueDate)</span>
+                        }
+                        <br>
+                        <span class="badge badge-primary">@task.Category?.CategoryName</span>
+                    </div>
+                    <div class="task-actions">
+                        <a asp-action="Edit" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <form asp-action="Delete" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@task.TaskId" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                        <form asp-action="ToggleCompleted" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@task.TaskId" />
+                            <button type="submit" class="btn btn-sm btn-success">
+                                @(task.Completed ? "Undo" : "✓")
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                <div class="card-body">
-                    @{
-                        var q4Tasks = tasks.Where(t => t.Quadrant == 4).ToList();
-                    }
-                    @foreach (var task in q4Tasks)
-                    {
-                        <div class="task-item mb-2 p-2 border-bottom">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>@task.TaskName</strong>
-                                    @if (!string.IsNullOrEmpty(task.DueDate))
-                                    {
-                                        <span class="text-muted ml-2">(Due: @task.DueDate)</span>
-                                    }
-                                    <br>
-                                    <span class="badge badge-primary">@task.Category?.CategoryName</span>
-                                </div>
-                                <div>
-                                    <a asp-action="Edit" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-primary">Edit</a>
-                                    <a asp-action="Delete" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-danger">Delete</a>
-                                    <form asp-action="MarkCompleted" method="post" class="d-inline">
-                                        <input type="hidden" name="id" value="@task.TaskId" />
-                                        <button type="submit" class="btn btn-sm btn-success">✓</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                    @if (!q4Tasks.Any())
-                    {
-                        <p class="text-muted">No tasks in this quadrant</p>
-                    }
+            }
+            @if (!q3Tasks.Any())
+            {
+                <p class="no-tasks">No tasks in this quadrant</p>
+            }
+        </div>
+    </div>
+
+    <!-- Quadrant IV: Not Important/Not Urgent -->
+    <div class="quadrant quadrant-IV">
+        <div class="quadrant-header">Quadrant IV: Not Important / Not Urgent</div>
+        <div class="quadrant-body">
+            @{
+                var q4Tasks = tasks.Where(t => t.Quadrant == 4).ToList();
+            }
+            @foreach (var task in q4Tasks)
+            {
+                <div class="task-item">
+                    <div>
+                        <strong>@task.TaskName</strong>
+                        @if (!string.IsNullOrEmpty(task.DueDate))
+                        {
+                            <span class="text-muted">(Due: @task.DueDate)</span>
+                        }
+                        <br>
+                        <span class="badge badge-primary">@task.Category?.CategoryName</span>
+                    </div>
+                    <div class="task-actions">
+                        <a asp-action="Edit" asp-route-id="@task.TaskId" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <form asp-action="Delete" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@task.TaskId" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                        <form asp-action="ToggleCompleted" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@task.TaskId" />
+                            <button type="submit" class="btn btn-sm btn-success">
+                                @(task.Completed ? "Undo" : "✓")
+                            </button>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            }
+            @if (!q4Tasks.Any())
+            {
+                <p class="no-tasks">No tasks in this quadrant</p>
+            }
         </div>
     </div>
 </div>

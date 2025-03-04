@@ -1,0 +1,54 @@
+@model Mission08_Team3_7.Models.Task
+
+@{
+    ViewData["Title"] = "Add New Task";
+}
+
+<div class="container">
+    <h2>Add New Task</h2>
+    <form asp-action="Create" method="post">
+        <div class="form-group">
+            <label asp-for="TaskName" class="control-label">Task Name</label>
+            <input asp-for="TaskName" class="form-control" />
+            <span asp-validation-for="TaskName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DueDate" class="control-label">Due Date</label>
+            <input asp-for="DueDate" class="form-control" type="date" />
+            <span asp-validation-for="DueDate" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Quadrant" class="control-label">Quadrant</label>
+            <select asp-for="Quadrant" class="form-control">
+                <option value="1">Quadrant I: Important / Urgent</option>
+                <option value="2">Quadrant II: Important / Not Urgent</option>
+                <option value="3">Quadrant III: Not Important / Urgent</option>
+                <option value="4">Quadrant IV: Not Important / Not Urgent</option>
+            </select>
+            <span asp-validation-for="Quadrant" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="CategoryId" class="control-label">Category</label>
+            <select asp-for="CategoryId" class="form-control">
+                <option value="">Select a Category</option>
+                @foreach (var category in ViewBag.Categories)
+                {
+                    <option value="@category.CategoryId">@category.CategoryName</option>
+                }
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Add Task" class="btn btn-primary" />
+            <a asp-action="MatrixGrid" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
