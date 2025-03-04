@@ -1,0 +1,48 @@
+@model IEnumerable<Mission08_Team3_7.Models.Task>
+
+@{
+    ViewData["Title"] = "Completed Tasks";
+}
+
+<div class="container">
+    <h2 class="mb-4">Completed Tasks</h2>
+    
+    @if (Model.Any())
+    {
+        <div class="list-group">
+            @foreach (var task in Model)
+            {
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <s><strong>@task.TaskName</strong></s>
+                            @if (!string.IsNullOrEmpty(task.DueDate))
+                            {
+                                <span class="text-muted ml-2">(Completed on @DateTime.Now.ToString("MM/dd/yyyy"))</span>
+                            }
+                            <br>
+                            <span class="badge badge-secondary">@task.Category?.CategoryName</span>
+                            <span class="badge badge-info">Quadrant @task.Quadrant</span>
+                        </div>
+                        <div>
+                            <form asp-action="Delete" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@task.TaskId" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                            <form asp-action="ToggleCompleted" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@task.TaskId" />
+                                <button type="submit" class="btn btn-sm btn-warning">Undo</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            No completed tasks found. Great job keeping up!
+        </div>
+    }
+</div>
